@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer List</title>
+</head>
+
+<body>
+    <!-- Customer List Display -->
+    <h2>Customer List</h2>
+    <table id="customerTable">
+        <!-- Customer list will be populated here -->
+    </table>
+
+    <!-- Button to navigate to Add Customer screen -->
+    <button onclick="loadAddCustomer()">Add Customer</button>
+
+    <script>
+        // Assume you have a function to make API calls
+        function makeApiCall(url, method, headers, data) {
+            // Implement logic to make API calls using a library like Axios or fetch
+            // Placeholder code, replace it with actual implementation
+            return Promise.resolve([{ // Replace with the actual response structure for the customer list
+                "first_name": "Jane",
+                "last_name": "Doe",
+                "state": "New York",
+                "email": "jane.doe@example.com",
+                "phone": "1234567890"
+            }, {
+                "first_name": "John",
+                "last_name": "Smith",
+                "state": "California",
+                "email": "john.smith@example.com",
+                "phone": "9876543210"
+            }, {
+                "first_name": "Alice",
+                "last_name": "Johnson",
+                "state": "Texas",
+                "email": "alice.johnson@example.com",
+                "phone": "5678901234"
+            }, {
+                "first_name": "Bob",
+                "last_name": "Williams",
+                "state": "Florida",
+                "email": "bob.williams@example.com",
+                "phone": "6789012345"
+            }, {
+                "first_name": "Eva",
+                "last_name": "Davis",
+                "state": "Illinois",
+                "email": "eva.davis@example.com",
+                "phone": "8901234567"
+            }]);
+        }
+        // Fetch and display the customer list
+        function fetchAndDisplayCustomerList() {
+            const url = "https://qa2.sunbasedata.com/sunbase/portal/api/assignment.jsp";
+            const method = "GET";
+            const authToken = localStorage.getItem("authToken"); // Retrieve the stored token
+
+            if (!authToken) {
+                console.error("Authentication token not found. Redirect to login."); // Handle the case when the token is not available
+                // You may want to redirect to the login screen or take appropriate action
+                return;
+            }
+
+            const headers = {
+                "Authorization": `Bearer ${authToken}`
+            };
+
+            makeApiCall(url, method, headers)
+                .then(response => {
+                    // Assuming the response is an array of customer objects
+                    displayCustomerList(response);
+                })
+                .catch(error => {
+                    console.error("Error fetching customer list", error);
+                    // Handle error (display an error message, etc.)
+                });
+        }
+
+        // Display the customer list in the table
+        function displayCustomerList(customers) {
+            const table = document.getElementById("customerTable");
+
+            // Clear existing table content
+            table.innerHTML = "<tr><th>First Name</th><th>Last Name</th><th>State</th><th>Email</th><th>Phone</th><th>Actions</th></tr>";
+
+            // Populate the table with customer data
+            customers.forEach(customer => {
+                const row = table.insertRow(-1);
+                const cell1 = row.insertCell(0);
+                const cell2 = row.insertCell(1);
+                const cell3 = row.insertCell(2);
+                const cell4 = row.insertCell(3);
+                const cell5 = row.insertCell(4);
+                const cell6 = row.insertCell(5);
+
+                cell1.textContent = customer.first_name;
+                cell2.textContent = customer.last_name;
+                cell3.textContent = customer.state;
+                cell4.textContent = customer.email;
+                cell5.textContent = customer.phone;
+
+                // Add a button for each customer to perform actions (e.g., update or delete)
+                const editButton = document.createElement("button");
+                editButton.textContent = "Edit";
+                editButton.onclick = function () {
+                    // Call the editCustomer function with the customer's UUID
+                    editCustomer(customer.uuid);
+                };
+
+                const deleteButton = document.createElement("button");
+                deleteButton.textContent = "Delete";
+                deleteButton.onclick = function () {
+                    // Call the deleteCustomer function with the customer's UUID
+                    deleteCustomer(customer.uuid);
+                };
+
+                cell6.appendChild(editButton);
+                cell6.appendChild(deleteButton);
+            });
+        }
+
+        // Load customer list on page load
+        fetchAndDisplayCustomerList();
+
+        // Redirect to the Add Customer screen
+        function loadAddCustomer() {
+            // Replace this with the actual path or file for the Add Customer screen
+            window.location.href = "addCustomer.html";
+        }
+
+        // Function to edit a customer
+        function editCustomer(uuid) {
+            // Implement the logic to open a modal or navigate to an edit screen
+            // Pass the customer's UUID and details for editing
+            console.log("Editing customer with UUID:", uuid);
+        }
+
+        // Function to delete a customer
+        function deleteCustomer(uuid) {
+            const url = "https://qa2.sunbasedata.com/sunbase/portal/api/assignment.jsp";
+            const method = "POST";
+            const authToken = localStorage.getItem("authToken"); // Retrieve the stored token
+
+            if (!authToken) {
+                console.error("Authentication token not found. Redirect to login."); // Handle the case when the token is not available
+                // You may want to redirect to the login screen or take appropriate action
+                return;
+            }
+
+            const headers = {
+                "Authorization": `Bearer ${authToken}`,
+                "Content-Type": "application/json"
+            };
+            const data = {
+                "cmd": "delete",
+                "uuid": uuid
+            };
+
+            makeApiCall(url, method, headers, data)
+                .then(response => {
+                    if (response.status === 200) {
+                        // Successful deletion, refresh the customer list
+                        fetchAndDisplayCustomerList();
+                    } else {
+                        console.error("Customer deletion failed. Status code:", response.status);
+                        // Handle other status codes as needed
+                    }
+                })
+                .catch(error => {
+                    console.error("Error deleting customer", error);
+                    // Handle error (display an error message, etc.)
+                });
+        }
+    </script>
+</body>
+
+</html>

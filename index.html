@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+</head>
+
+<body>
+    <!-- Login Form -->
+    <form id="loginForm">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required><br>
+
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required><br>
+
+        <!-- Button to trigger authentication -->
+        <button type="button" onclick="authenticateUser()">Login</button>
+    </form>
+
+    <script>
+        // Function to make API calls
+        function makeApiCall(url, method, headers, data) {
+            // Implement logic to make API calls using a library like Axios or fetch
+            // Placeholder code, replace it with actual implementation
+            return Promise.resolve({ token: "your_generated_token" });
+        }
+
+        function authenticateUser() {
+            // Implement authentication logic using provided API (Step 1)
+            const url = "https://qa2.sunbasedata.com/sunbase/portal/api/assignment_auth.jsp";
+            const method = "POST";
+            const headers = { "Content-Type": "application/json" };
+            const data = {
+                "login_id": document.getElementById("username").value,
+                "password": document.getElementById("password").value
+            };
+
+            // Make the API call using the makeApiCall function
+            makeApiCall(url, method, headers, data)
+                .then(response => {
+                    // Assuming the token is in the 'response.token' field (replace it with the actual response structure)
+                    const token = response.token;
+
+                    // Store the received token (you can use localStorage, sessionStorage, or other methods)
+                    localStorage.setItem("authToken", token);
+
+                    // Redirect to the Customer List screen
+                    window.location.href = "customerList.html";
+                })
+                .catch(error => {
+                    console.error("Authentication failed", error);
+                    // Handle authentication failure (display an error message, etc.)
+                });
+        }
+    </script>
+</body>
+
+</html>

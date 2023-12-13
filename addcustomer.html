@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Customer</title>
+</head>
+
+<body>
+    <!-- Add Customer Form -->
+    <h2>Add Customer</h2>
+    <form id="addCustomerForm">
+        <label for="firstName">First Name:</label>
+        <input type="text" id="firstName" name="firstName" required><br>
+
+        <label for="lastName">Last Name:</label>
+        <input type="text" id="lastName" name="lastName" required><br>
+
+        <label for="street">Street:</label>
+        <input type="text" id="street" name="street" required><br>
+
+        <label for="address">Address:</label>
+        <input type="text" id="address" name="address" required><br>
+
+        <label for="city">City:</label>
+        <input type="text" id="city" name="city" required><br>
+
+        <label for="state">State:</label>
+        <input type="text" id="state" name="state" required><br>
+
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required><br>
+
+        <label for="phone">Phone:</label>
+        <input type="tel" id="phone" name="phone" required><br>
+
+        <!-- Button to trigger customer creation -->
+        <button type="button" onclick="createCustomer()">Create Customer</button>
+    </form>
+
+    <script>
+        // Assume you have a function to make API calls
+        function makeApiCall(url, method, headers, data) {
+            // Implement logic to make API calls using a library like Axios or fetch
+            // Placeholder code, replace it with the actual implementation
+            return fetch(url, {
+                method: method,
+                headers: headers,
+                body: JSON.stringify(data)
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+                    return response.json();
+                });
+        }
+
+        // Create a new customer
+        function createCustomer() {
+            const url = "https://qa2.sunbasedata.com/sunbase/portal/api/assignment.jsp";
+            const method = "POST";
+            const authToken = localStorage.getItem("authToken"); // Retrieve the stored token
+
+            if (!authToken) {
+                console.error("Authentication token not found. Redirect to login."); // Handle the case when the token is not available
+                // You may want to redirect to the login screen or take appropriate action
+                return;
+            }
+
+            const headers = {
+                "Authorization": `Bearer ${authToken}`,
+                "Content-Type": "application/json"
+            };
+
+            const data = {
+                "cmd": "create",
+                "first_name": document.getElementById("firstName").value,
+                "last_name": document.getElementById("lastName").value,
+                "street": document.getElementById("street").value,
+                "address": document.getElementById("address").value,
+                "city": document.getElementById("city").value,
+                "state": document.getElementById("state").value,
+                "email": document.getElementById("email").value,
+                "phone": document.getElementById("phone").value
+            };
+
+            makeApiCall(url, method, headers, data)
+                .then(response => {
+                    if (response.status === 201) {
+                        // Successful creation, redirect to the Customer List screen
+                        window.location.href = "customerList.html";
+                    } else {
+                        console.error("Customer creation failed. Status code:", response.status);
+                        // Handle other status codes as needed
+                    }
+                })
+                .catch(error => {
+                    console.error("Error creating customer", error);
+                    // Handle error (display an error message, etc.)
+                });
+        }
+    </script>
+</body>
+
+</html>
